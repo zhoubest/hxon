@@ -5,7 +5,7 @@
 
 
 ## 使用
-  1. 注册华创云
+  1. 购买华创中国产品时，会提供账号和密码，获取账号后根据提供的说明书，更改密码
   2. clone 此项目, 将 custom\_components/hxon 目录拷贝至 Home Assistant 配置目录的 custom\_components 目录下。
   3. 重启 Home Assistant 服务。
   4. 在 Home Assistant 的集成页面，搜索 "hxon" 并添加。
