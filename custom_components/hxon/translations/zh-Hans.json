@@ -1,0 +1,24 @@
+{
+    "config": {
+        "error": {
+            "duplicated_username": "用户名重复了",
+            "invalid_user": "用户名/密码错误"
+        },
+        "step": {
+            "entities": {
+                "data": {
+                    "include_entities": "包含的实体"
+                },
+                "description": "选择实体:",
+                "title": "选择实体"
+            },
+            "user": {
+                "data": {
+                    "uname": "用户名",
+                    "upwd": "密码"
+                },
+                "title": "输入用户信息"
+            }
+        }
+    }
+}

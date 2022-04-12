@@ -1,0 +1,19 @@
+{
+  "domain": "hxon",
+  "name": "hxon",
+  "version": "1.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/larry-wong/hxon",
+  "issue_tracker": "https://github.com/larry-wong/hxon/issues",
+  "requirements": [
+    "paho-mqtt==1.6.1"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@zhoubest"
+  ],
+  "iot_class": "cloud_push"
+}
