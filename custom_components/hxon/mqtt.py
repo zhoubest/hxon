@@ -22,7 +22,6 @@ from .const import (
     MQTT_KEEPALIVE,
     MQTT_PORT,
     TOPIC_PREFIX,
-    TOPIC_PUBLISH,
 )
 from .helper import generate_msg, generate_msg_list, generate_topic, resolve_msg
 
@@ -56,16 +55,14 @@ class HxonMqtt:
     def _connect(self, _event=None) -> None:
         # Init MQTT connection
         _LOGGING.error("---Init MQTT connection---")
-        _uid = hashlib.md5(self._uname.encode("utf-8")).hexdigest()
+        _uid = "hxonha"+hashlib.md5(self._uname.encode("utf-8")).hexdigest()
         self._mqttc = mqtt.Client(_uid, mqtt.MQTTv311)
         self._mqttc.username_pw_set(self._uname, password=self._pwd)
         self._mqttc.connect(MQTT_HOST, port=MQTT_PORT,
                             keepalive=MQTT_KEEPALIVE)
         self._mqttc.on_message = self._mqtt_on_message
         self._mqttc.loop_start()
-
         for entity_id in self._entity_ids:
-
             _LOGGING.error("this is entity id:" + entity_id)
             state = self._hass.states.get(entity_id)
             if state is None:
@@ -74,10 +71,10 @@ class HxonMqtt:
             _LOGGING.error(topic)
             self._topic_to_entity_id[topic] = entity_id
             self._mqttc.publish(
-                TOPIC_PUBLISH.format(topic=topic),
+                topic,
                 generate_msg(state.domain, state.state, state.attributes),
             )
-            self._mqttc.subscribe(topic, 1, 2)
+            self._mqttc.subscribe(topic, 1)
 
         # Listen for state changes
         self._remove_listener = self._hass.bus.listen(
@@ -85,7 +82,7 @@ class HxonMqtt:
         )
 
         # Listen for heartbeat packages
-        self._mqttc.subscribe(self._topic_ping, 2)
+        self._mqttc.subscribe(self._topic_ping, 1)
         self._reset_reconnect_timer()
 
         # Send heartbeat packages to check the connection
@@ -134,7 +131,7 @@ class HxonMqtt:
         ]
         state = self._hass.states.get(entity_id)
         self._mqttc.publish(
-            TOPIC_PUBLISH.format(topic=topic),
+            topic,
             generate_msg(state.domain, state.state, state.attributes),
         )
         _LOGGING.error(generate_msg(
