@@ -11,11 +11,10 @@ CONF_INCLUDE_ENTITIES: Final = "include_entities"
 
 
 # #### Server ####
-HTTP_HOST: Final = "http://121.5.72.219:8080/"
+HTTP_HOST: Final = "http://192.168.31.176:8080/"
 MQTT_HOST: Final = "121.5.72.219"
 MQTT_PORT: Final = 1883
-MQTT_KEEPALIVE: Final = 600
-TOPIC_PUBLISH: Final = "{topic}/set"
+MQTT_KEEPALIVE: Final = 60
 TOPIC_PREFIX: Final = "hxon/"
 TOPIC_SUFFIX_LIGHT: Final = "0002"
 TOPIC_SUFFIX_FAN: Final = "0003"
@@ -36,7 +35,7 @@ MSG_SPEED_COUNT: Final = 4  # for fans, 4 speed supported at most
 # #### Service Api ####
 FETCH_TOPICS_URL: Final = f"{HTTP_HOST}device/self/list"
 FETCH_TOPIC_URL: Final = f"{HTTP_HOST}device/self/fetch/topic"
-ADD_TOPIC_URL: Final = f"{HTTP_HOST}device/self/add/"
-RENAME_TOPIC_URL: Final = f"{HTTP_HOST}device/self/edit"
-DEL_TOPIC_URL: Final = f"{HTTP_HOST}device/delete/topic"
+ADD_TOPIC_URL: Final = f"{HTTP_HOST}device/self/add"
+EDIT_TOPIC_URL: Final = f"{HTTP_HOST}device/self/edit"
+DEL_TOPIC_URL: Final = f"{HTTP_HOST}device/self/delete/topic"
 VALIDATE_USER_URL: Final = f"{HTTP_HOST}validate"
