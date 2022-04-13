@@ -82,6 +82,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is None:
             # fetch topics created by us before.
             self._all_topics = await self._http.async_fetch_all_topics()
+            _LOGGER.error("followed is the return of self._http.async_fetch_all_topics")
+            _LOGGER.error(self._all_topics)
             # filter entities we support
             entities = sorted(
                 filter(
@@ -92,23 +94,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 key=lambda item: item.entity_id,
             )
 
-            # find entities configured last time
-            default = [
-                # entity.entity_id
-                # for entity in filter(
-                #     lambda ent: generate_topic(ent.domain, ent.entity_id)
-                #     in self._all_topics,
-                #     entities,
-                # )
-            ]
-
             return self.async_show_form(
                 step_id="entities",
                 data_schema=vol.Schema(
                     {
                         vol.Required(
-                            CONF_INCLUDE_ENTITIES,
-                            default=default,
+                            CONF_INCLUDE_ENTITIES
                         ): cv.multi_select(
                             {entity.entity_id: entity.name for entity in entities}
                         ),
@@ -118,11 +109,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         # create topic for heartbeat packages
-        # if TOPIC_PING not in self._all_topics:
-        #     ###await self._http.async_add_topic(TOPIC_PING, "ping")
-        # else:
-        #     # This topic does not matter to entities, remove it for following syncs
-        #     del self._all_topics[TOPIC_PING]
+        TOPIC_PING = "hxon/"+self._user_input[CONF_UNAME]+"/ping"
+        if TOPIC_PING not in self._all_topics:
+            await self._http.async_add_topic(TOPIC_PING, "ping")
+        else:
+            # This topic does not matter to entities, remove it for following syncs
+            del self._all_topics[TOPIC_PING]
 
         # start to sync selected entities to Hxon Service
         for entity_id in user_input[CONF_INCLUDE_ENTITIES]:
@@ -131,23 +123,19 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 continue
             topic = generate_topic(
                 self._user_input[CONF_UNAME], state.domain, entity_id)
-            # del self._all_topics[topic]
-            # if topic in self._all_topics:
-            #     # topic has already been configured before, reuse it
-            #     if self._all_topics[topic] != state.name:
-            #         # await self._http.async_rename_topic(topic, state.name)
+            if topic in self._all_topics:
+                # topic has already been configured before, reuse it
+                await self._http.async_update_topic(topic, state.name)
+                del self._all_topics[topic]
+            else:
+                # topic not configured before, create it
+                await self._http.async_add_topic(topic, state.name)
 
-            #         # remove topic from self._all_topics when its entity is selected.
-            #         # After the loop, topics remained in self._all_topics are to be removed.
-            #
-            # else:
-            # topic not configured before, create it
-            # await self._http.async_add_topic(topic, state.name)
-
-            # remove the topics we do not need
-        # for topic in self._all_topics:
-        #     # await self._http.async_del_topic(topic)
-        #     # end to sync
+        # remove the topics we do not need
+        for topic in self._all_topics:
+            await self._http.async_del_topic(topic)
+            del self._all_topics[topic]
+        # end to sync
 
         self._user_input.update(user_input)
         entity_num = len(user_input[CONF_INCLUDE_ENTITIES])
